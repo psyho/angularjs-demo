@@ -1,2 +1,3 @@
 target
 .lein*
+resources/public/js/application.js
