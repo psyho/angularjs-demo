@@ -1,6 +1,6 @@
 (ns app
-  (:require projects
+  (:require users
             [angularjs :as ng]))
 
 (def app (ng/module "project" []))
-(ng/controller app "Hello" projects/hello-controller)
+(ng/controller app "UserListController" users/user-list-controller)

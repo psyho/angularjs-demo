@@ -2,23 +2,22 @@
 <html ng-app="project">
   <head>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular-resource.min.js"></script>
     <script src="/js/application.js"></script>
   </head>
   <body>
-    <h1>Projects</h1>
+    <h1>Users:</h1>
+    <div ng-controller="UserListController">
+      <ul>
+        <li ng-repeat="user in users">
+          {{user.name}}
+          <a ng-click="remove(user)">[remove]</a>
+        </li>
+      </ul>
 
-    <div ng-controller="Hello">
-      <h2>Hello, {{user.name}}!</h2>
-
-      <p>Not your name?</p>
-      <p>Tell us how to call you:</p>
+      <p>Add a user:</p>
       <p>
-        <input type="text" ng-model="user.name" />
-      </p>
-
-      <p>
-        <a ng-click="sayHello()">Click me!</a>
+        <input type="text" ng-model="newUser.name" />
+        <button ng-click="add()">Add</button>
       </p>
     </div>
   </body>

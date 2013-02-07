@@ -10,7 +10,7 @@
 
 (defn atom-pair [[name value]]
   `(~name 
-     (angularjs/scope-synced-atom 
+     (angularjs/scope-atom
        ~'$scope 
        ~(str name)
        ~value)))
@@ -23,7 +23,7 @@
   (string/replace s #"-\w" (comp str last string/upper-case)))
 
 (defn assignment [[name]]
-  `(aset ~'$scope ~(camelize name) ~name))
+  `(aset ~'$scope ~(camelize name) (angularjs/with-clj-args ~name)))
 
 (defmacro letfn$ [fns & body]
   (let [assigns (map assignment fns)]

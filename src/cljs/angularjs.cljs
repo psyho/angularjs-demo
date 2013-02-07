@@ -1,27 +1,47 @@
-(ns angularjs)
+(ns angularjs
+  (:refer-clojure :exclude [swap! reset!]))
 
 (defn add-$inject [$inject f]
   (aset f "$inject" (to-array (map str $inject)))
   f)
 
-(defn update-atom-on-scope-change [atom]
-  (fn [n] 
-    (let [new-value (js->clj n :keywordize-keys true)]
-      (when (not= @atom new-value)
-        (reset! atom new-value)))))
+(deftype ScopeAtom [$scope name]
+  IDeref
+  (-deref [self] (.get self))
+  
+  Object
+  (get [_] (js->clj (aget $scope name) :keywordize-keys true))
+  (set [_ new-value] (aset $scope name (clj->js new-value)) new-value))
 
-(defn update-scope-on-atom-change [$scope field]
-  (fn [k r o n] 
-    (let [new-value (clj->js n)]
-      (when (not= (aget $scope field) new-value)
-        (aset $scope field (clj->js n))))))
+(defn reset! [a new-value]
+  "Sets the value of atom to newval without regard for the
+  current value. Returns newval."
+  (.set a new-value))
 
-(defn scope-synced-atom [$scope name value]
-  (let [at (atom value)]
-    (aset $scope name (clj->js @at))
-    (add-watch at :update-$scope (update-scope-on-atom-change $scope name))
-    (.$watch $scope name (update-atom-on-scope-change at) true)
-    at))
+(defn swap!
+  "Atomically swaps the value of atom to be:
+  (apply f current-value-of-atom args). Note that f may be called
+  multiple times, and thus should be free of side effects.  Returns
+  the value that was swapped in."
+  ([a f]
+     (reset! a (f (.get a))))
+  ([a f x]
+     (reset! a (f (.get a) x)))
+  ([a f x y]
+     (reset! a (f (.get a) x y)))
+  ([a f x y z]
+     (reset! a (f (.get a) x y z)))
+  ([a f x y z & more]
+     (reset! a (apply f (.get a) x y z more))))
+
+(defn scope-atom [$scope name value]
+  (let [atom (ScopeAtom. $scope name)]
+    (reset! atom value)
+    atom))
+
+(defn with-clj-args [f]
+  (fn [& args]
+    (apply f (map #(js->clj % :keywordize-keys true) args))))
 
 (defn module
   ([name] 
