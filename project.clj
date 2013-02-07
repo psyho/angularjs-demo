@@ -15,6 +15,14 @@
                                    :externs ["externs/angularjs-externs.js"]
                                    :optimizations :advanced
                                    :pretty-print false}
+                        :jar true}
+
+                       :debug 
+                       {:source-paths ["src/cljs"]
+                        :compiler {:output-to "resources/public/js/application.js"
+                                   :externs ["externs/angularjs-externs.js"]
+                                   :optimizations :whitespace
+                                   :pretty-print true}
                         :jar true}}}
   :ring {:handler angularjs-demo.server/app})
 
